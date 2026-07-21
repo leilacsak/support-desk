@@ -9,7 +9,9 @@ export async function fetchTickets() {
 export async function fetchTicket(id) {
   const response = await fetch(`/api/tickets/${id}`)
   if (!response.ok) {
-    throw new Error(`Failed to fetch ticket: ${response.status} ${response.statusText}`)
+    const error = new Error(`Failed to fetch ticket: ${response.status} ${response.statusText}`)
+    error.status = response.status
+    throw error
   }
   return response.json()
 }

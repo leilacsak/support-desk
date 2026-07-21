@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { fetchTicket } from './api.js'
 
@@ -7,18 +7,25 @@ export default function TicketDetail() {
   const [ticket, setTicket] = useState(null)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
+  const loadTicket = useCallback(() => {
     setTicket(null)
     setError(null)
     fetchTicket(id)
       .then((data) => setTicket(data))
-      .catch((err) => setError(err.message))
+      .catch((err) => {
+        setError(err.status === 404 ? 'Ticket not found' : 'Something went wrong. Please try again.')
+      })
   }, [id])
+
+  useEffect(() => {
+    loadTicket()
+  }, [loadTicket])
 
   if (error) {
     return (
       <div>
-        <p>Failed to load ticket: {error}</p>
+        <p>{error}</p>
+        <button type="button" onClick={loadTicket}>Retry</button>
         <Link to="/">Back to list</Link>
       </div>
     )
