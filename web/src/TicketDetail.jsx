@@ -13,7 +13,10 @@ export default function TicketDetail() {
     fetchTicket(id)
       .then((data) => setTicket(data))
       .catch((err) => {
-        setError(err.status === 404 ? 'Ticket not found' : 'Something went wrong. Please try again.')
+        setError({
+          message: err.status === 404 ? 'Ticket not found' : 'Something went wrong. Please try again.',
+          isNotFound: err.status === 404,
+        })
       })
   }, [id])
 
@@ -24,8 +27,10 @@ export default function TicketDetail() {
   if (error) {
     return (
       <div>
-        <p>{error}</p>
-        <button type="button" onClick={loadTicket}>Retry</button>
+        <p>{error.message}</p>
+        {!error.isNotFound && (
+          <button type="button" onClick={loadTicket}>Retry</button>
+        )}
         <Link to="/">Back to list</Link>
       </div>
     )
