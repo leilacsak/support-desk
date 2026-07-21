@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import { Routes, Route, Link } from 'react-router-dom'
 import { fetchTickets } from './api.js'
+import TicketDetail from './TicketDetail.jsx'
 import './App.css'
 
-export default function App() {
+function TicketList() {
   const [tickets, setTickets] = useState([])
   const [error, setError] = useState(null)
 
@@ -21,10 +23,21 @@ export default function App() {
       <ul>
         {tickets.map((ticket) => (
           <li key={ticket.id}>
-            {ticket.subject} — {ticket.status} / {ticket.priority}
+            <Link to={`/tickets/${ticket.id}`}>
+              {ticket.subject} — {ticket.status} / {ticket.priority}
+            </Link>
           </li>
         ))}
       </ul>
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<TicketList />} />
+      <Route path="/tickets/:id" element={<TicketDetail />} />
+    </Routes>
   )
 }
