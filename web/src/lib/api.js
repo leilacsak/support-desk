@@ -8,6 +8,14 @@ export async function fetchTickets() {
   return response.json()
 }
 
+export async function fetchTicketCount() {
+  const response = await fetch(`${API_BASE}/api/tickets/count`)
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ticket count: ${response.status} ${response.statusText}`)
+  }
+  return response.json()
+}
+
 export async function fetchTicket(id) {
   const response = await fetch(`${API_BASE}/api/tickets/${id}`)
   if (!response.ok) {

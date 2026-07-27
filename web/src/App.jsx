@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchTickets } from './lib/api.js'
+import { fetchTickets, fetchTicketCount } from './lib/api.js'
 import TicketDetail from './TicketDetail.jsx'
 import './App.css'
 
@@ -34,10 +34,22 @@ function TicketList({ onSelectTicket }) {
 
 export default function App() {
   const [selectedId, setSelectedId] = useState(null)
+  const [ticketCount, setTicketCount] = useState(null)
 
-  if (selectedId !== null) {
-    return <TicketDetail id={selectedId} onBack={() => setSelectedId(null)} />
-  }
+  useEffect(() => {
+    fetchTicketCount()
+      .then((data) => setTicketCount(data.count))
+      .catch(() => {})
+  }, [])
 
-  return <TicketList onSelectTicket={setSelectedId} />
+  return (
+    <>
+      {selectedId !== null ? (
+        <TicketDetail id={selectedId} onBack={() => setSelectedId(null)} />
+      ) : (
+        <TicketList onSelectTicket={setSelectedId} />
+      )}
+      {ticketCount !== null && <footer> {ticketCount} open tickets</footer>}
+    </>
+  )
 }
