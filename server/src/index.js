@@ -1,21 +1,8 @@
-import express from "express";
-import cors from "cors";
+import config from "./config/index.js";
+import { buildApp } from "./app.js";
 
-import ticketsRouter from "./routes/tickets.js";
+const app = buildApp();
 
-const PORT = process.env.PORT || 4000;
-
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok" });
-});
-
-app.use("/api/tickets", ticketsRouter);
-
-app.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
+app.listen(config.port, () => {
+  console.log(`Server listening on http://localhost:${config.port}`);
 });

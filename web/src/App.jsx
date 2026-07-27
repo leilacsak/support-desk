@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
-import { fetchTickets } from './api.js'
+import { fetchTickets } from './lib/api.js'
 import TicketDetail from './TicketDetail.jsx'
 import './App.css'
 
-function TicketList() {
+function TicketList({ onSelectTicket }) {
   const [tickets, setTickets] = useState([])
   const [error, setError] = useState(null)
 
@@ -23,9 +22,9 @@ function TicketList() {
       <ul>
         {tickets.map((ticket) => (
           <li key={ticket.id}>
-            <Link to={`/tickets/${ticket.id}`}>
+            <button type="button" onClick={() => onSelectTicket(ticket.id)}>
               {ticket.subject} — {ticket.status} / {ticket.priority}
-            </Link>
+            </button>
           </li>
         ))}
       </ul>
@@ -34,10 +33,11 @@ function TicketList() {
 }
 
 export default function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<TicketList />} />
-      <Route path="/tickets/:id" element={<TicketDetail />} />
-    </Routes>
-  )
+  const [selectedId, setSelectedId] = useState(null)
+
+  if (selectedId !== null) {
+    return <TicketDetail id={selectedId} onBack={() => setSelectedId(null)} />
+  }
+
+  return <TicketList onSelectTicket={setSelectedId} />
 }

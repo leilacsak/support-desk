@@ -1,5 +1,7 @@
+import { API_BASE } from '../config.js'
+
 export async function fetchTickets() {
-  const response = await fetch('/api/tickets')
+  const response = await fetch(`${API_BASE}/api/tickets`)
   if (!response.ok) {
     throw new Error(`Failed to fetch tickets: ${response.status} ${response.statusText}`)
   }
@@ -7,7 +9,7 @@ export async function fetchTickets() {
 }
 
 export async function fetchTicket(id) {
-  const response = await fetch(`/api/tickets/${id}`)
+  const response = await fetch(`${API_BASE}/api/tickets/${id}`)
   if (!response.ok) {
     const error = new Error(`Failed to fetch ticket: ${response.status} ${response.statusText}`)
     error.status = response.status

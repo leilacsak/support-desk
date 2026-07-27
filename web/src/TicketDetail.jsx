@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { fetchTicket } from './api.js'
+import { fetchTicket } from './lib/api.js'
 
-export default function TicketDetail() {
-  const { id } = useParams()
+export default function TicketDetail({ id, onBack }) {
   const [ticket, setTicket] = useState(null)
   const [error, setError] = useState(null)
 
@@ -31,7 +29,7 @@ export default function TicketDetail() {
         {!error.isNotFound && (
           <button type="button" onClick={loadTicket}>Retry</button>
         )}
-        <Link to="/">Back to list</Link>
+        <button type="button" onClick={onBack}>Back to list</button>
       </div>
     )
   }
@@ -40,7 +38,7 @@ export default function TicketDetail() {
     return (
       <div>
         <p>Loading ticket…</p>
-        <Link to="/">Back to list</Link>
+        <button type="button" onClick={onBack}>Back to list</button>
       </div>
     )
   }
@@ -51,7 +49,8 @@ export default function TicketDetail() {
       <p>Status: {ticket.status}</p>
       <p>Priority: {ticket.priority}</p>
       <p>Requester: {ticket.requester}</p>
-      <Link to="/">Back to list</Link>
+      <p>Description: {ticket.description}</p>
+      <button type="button" onClick={onBack}>Back to list</button>
     </div>
   )
 }
