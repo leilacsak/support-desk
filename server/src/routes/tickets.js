@@ -1,10 +1,16 @@
 import { Router } from "express";
-import { listTickets, getTicketById } from "../services/ticketService.js";
+import { listTickets, getTicketById, countOpenTickets } from "../services/ticketService.js";
 
 const router = Router();
 
 router.get("/", (req, res) => {
   res.json(listTickets());
+});
+
+router.get("/count", (req, res) => {
+  const count = countOpenTickets();
+  console.log(count, 200);
+  res.status(200).json({ count });
 });
 
 router.get("/:id", (req, res) => {

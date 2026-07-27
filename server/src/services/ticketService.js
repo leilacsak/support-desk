@@ -8,6 +8,10 @@ export function countTickets() {
   return tickets.length;
 }
 
+export function countOpenTickets() {
+  return tickets.filter((t) => t.status === "open").length;
+}
+
 export function getTicketById(id) {
   const numericId = Number(id);
   const ticket = tickets.find((t) => t.id === numericId);
