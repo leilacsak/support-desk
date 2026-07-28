@@ -6,11 +6,19 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "dev": "node --watch src/index.js",
+    "migrate": "node-pg-migrate",
+    "migrate:up": "node-pg-migrate up",
+    "migrate:down": "node-pg-migrate down",
+    "seed": "node scripts/seed.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "pg": "^8.22.0"
+  },
+  "devDependencies": {
+    "node-pg-migrate": "^9.0.0"
   }
 }
