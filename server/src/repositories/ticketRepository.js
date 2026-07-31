@@ -1,7 +1,7 @@
 import { query } from "../db.js";
 
 const SELECT_TICKET = `
-    SELECT 
+    SELECT
         t.id,
         t.subject,
         t.description,
@@ -18,31 +18,41 @@ const SELECT_TICKET = `
     LEFT JOIN users a ON a.id = t.assignee_id
 `;
 
-// findAll
-export async function findAll() {
+// visibleTo - single source of truth for "can this user see this ticket"
+function visibleTo(placeholder) {
+  return `(t.requester_id = ${placeholder} OR t.assignee_id = ${placeholder})`;
+}
+
+// findAllVisible
+export async function findAllVisible(userId) {
   const { rows } = await query(
     `${SELECT_TICKET}
+         WHERE ${visibleTo("$1")}
          ORDER BY
             CASE t.priority
                 WHEN 'high' THEN 0
                 WHEN 'medium' THEN 1
                 ELSE 2 END,
             t.created_at`,
+    [userId],
   );
   return rows;
 }
 
-// findById
-export async function findById(id) {
-  const { rows } = await query(`${SELECT_TICKET} WHERE t.id = $1`, [id]);
+// findByIdVisibleTo
+export async function findByIdVisibleTo(id, userId) {
+  const { rows } = await query(
+    `${SELECT_TICKET} WHERE t.id = $1 AND ${visibleTo("$2")}`,
+    [id, userId],
+  );
   return rows[0];
 }
 
-// countByStatus***
-export async function countByStatus(status) {
+// countByStatusVisibleTo
+export async function countByStatusVisibleTo(status, userId) {
   const { rows } = await query(
-    `SELECT COUNT(*) AS count FROM tickets WHERE status = $1`,
-    [status],
+    `SELECT COUNT(*) AS count FROM tickets t WHERE t.status = $1 AND ${visibleTo("$2")}`,
+    [status, userId],
   );
   return Number(rows[0].count);
 }
