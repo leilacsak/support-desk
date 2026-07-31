@@ -20,3 +20,28 @@ export async function findById(id) {
   );
   return rows[0] || null;
 }
+
+// findByEmailWithHash
+// the only function that returns password_hash, used for login
+export async function findByEmailWithHash(email) {
+  const { rows } = await query(
+    `SELECT id, email, name, password_hash FROM users WHERE email = $1`,
+    [email],
+  );
+  return rows[0] || null;
+}
+
+// create
+// take an ALREADY-HASHED password (hashing is the services job, not the repository's.)
+export async function create({ email, name, passwordHash }) {
+  const { rows } = await query(
+    `INSERT INTO users (email, name, password_hash) VALUES ($1, $2, $3) RETURNING ${SAFE_COLUMNS}`,
+    [email, name, passwordHash],
+  );
+  return rows[0];
+}
+
+// touchLastLogin
+export async function touchLastLogin(id) {
+  await query(`UPDATE users SET last_login_at = now() WHERE id = $1`, [id]);
+}
