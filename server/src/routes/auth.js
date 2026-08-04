@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { register } from "../services/userService.js";
+import { login, getCurrentUser } from "../services/authService.js";
 import { requireAuth } from "../middleware/requireAuth.js";
 
 const router = Router();
@@ -9,6 +10,16 @@ router.post("/register", async (req, res, next) => {
     const { email, name, password } = req.body;
     const result = await register({ email, name, password });
     res.status(201).json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/login", async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const result = await login({ email, password });
+    res.status(200).json(result);
   } catch (err) {
     next(err);
   }
