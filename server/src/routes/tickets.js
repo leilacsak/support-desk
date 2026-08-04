@@ -1,9 +1,13 @@
 import { Router } from "express";
-import { listTickets, getTicketById, countOpenTickets } from "../services/ticketService.js";
-import { AppError } from "../errors/AppError.js";
+import {
+  listTickets,
+  getTicketById,
+  countOpenTickets,
+} from "../services/ticketService.js";
 
 const router = Router();
-
+// callback function - a function that is passed as an argument
+//  to another function.
 router.get("/", async (req, res, next) => {
   try {
     res.json(await listTickets(req.user.id));
@@ -28,9 +32,6 @@ router.get("/:id", async (req, res, next) => {
     const ticket = await getTicketById(req.params.id, req.user.id);
     res.json(ticket);
   } catch (err) {
-    if (err instanceof AppError && err.status === 404) {
-      return res.status(404).json({ error: err.message });
-    }
     next(err);
   }
 });
