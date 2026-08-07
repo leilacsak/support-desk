@@ -1,69 +1,43 @@
 import { useEffect, useState } from 'react'
-import { fetchTickets, fetchTicketCount } from './lib/api.js'
+import { fetchTicketCount } from './lib/api.js'
 import { useAuth } from './auth/authContext.js'
 import LoginForm from './auth/LoginForm.jsx'
+import TicketList from './TicketList.jsx'
 import TicketDetail from './TicketDetail.jsx'
 import './App.css'
 
-function TicketList({ onSelectTicket }) {
-  const { token, loading: authLoading } = useAuth()
-  const [tickets, setTickets] = useState([])
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    if (authLoading || !token) return
-    fetchTickets(token)
-      .then((data) => setTickets(data))
-      .catch((err) => setError(err.message))
-  }, [token, authLoading])
-
-  return (
-    <div className="card">
-      {error && <p>Failed to load tickets: {error}</p>}
-
-      <ul>
-        {tickets.map((ticket) => (
-          <li key={ticket.id}>
-            <button type="button" onClick={() => onSelectTicket(ticket.id)}>
-              <span className="ticket-subject">{ticket.subject}</span>
-              <span className="ticket-badges">
-                <span className={`badge badge-status-${ticket.status}`}>{ticket.status}</span>
-                <span className={`badge badge-priority-${ticket.priority}`}>{ticket.priority}</span>
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
 export default function App() {
-  const { token, loading: authLoading, user, signOut } = useAuth()
+  const { token, loading, user, signOut } = useAuth()
   const [selectedId, setSelectedId] = useState(null)
   const [ticketCount, setTicketCount] = useState(null)
 
   useEffect(() => {
-    if (authLoading || !token) return
+    if (loading || !token) return
     fetchTicketCount(token)
       .then((data) => setTicketCount(data.count))
       .catch(() => {})
-  }, [token, authLoading])
+  }, [token, loading])
 
+  // This conditional rendering is a UX convenience only, not a security
+  // boundary - the server enforces authorization on every request
+  // regardless of what the client renders here.
   return (
     <>
-      <div className="app-header">
+      <nav className="navbar">
         <h1>Support Desk</h1>
-        {!authLoading && user && (
-          <button type="button" onClick={signOut}>Sign out</button>
+        {user && (
+          <div className="navbar-user">
+            <span>{user.name || user.email}</span>
+            <button type="button" onClick={signOut}>Sign out</button>
+          </div>
         )}
-      </div>
+      </nav>
 
-      {authLoading && <p>Loading…</p>}
+      {loading && <p>Loading…</p>}
 
-      {!authLoading && !user && <LoginForm />}
+      {!loading && !user && <LoginForm />}
 
-      {!authLoading && user && (
+      {!loading && user && (
         <>
           {selectedId !== null ? (
             <TicketDetail id={selectedId} onBack={() => setSelectedId(null)} />
@@ -71,14 +45,10 @@ export default function App() {
             <TicketList onSelectTicket={setSelectedId} />
           )}
           {ticketCount !== null && (
-            <footer>
-              {' '}
-              {ticketCount} open {ticketCount === 1 ? 'ticket' : 'tickets'}
-            </footer>
+            <footer> {ticketCount} open {ticketCount === 1 ? 'ticket' : 'tickets'}</footer>
           )}
         </>
       )}
     </>
   )
 }
-

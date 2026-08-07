@@ -49,9 +49,12 @@ export default function TicketDetail({ id, onBack }) {
   return (
     <div className="card">
       <h1>{ticket.subject}</h1>
-      <p>Status: <span className={`badge badge-status-${ticket.status}`}>{ticket.status}</span></p>
-      <p>Priority: <span className={`badge badge-priority-${ticket.priority}`}>{ticket.priority}</span></p>
-      <p>Requester: {ticket.requester}</p>
+      <div className="ticket-meta">
+        <p>Status: <span className={`badge badge-status-${ticket.status}`}>{ticket.status}</span></p>
+        <p>Priority: <span className={`badge badge-priority-${ticket.priority}`}>{ticket.priority}</span></p>
+        <p>Requester: {ticket.requester}</p>
+        <p>Assignee: {ticket.assignee ?? 'unassigned'}</p>
+      </div>
       <p>Description: {ticket.description}</p>
       <button type="button" onClick={onBack}>Back to list</button>
     </div>
